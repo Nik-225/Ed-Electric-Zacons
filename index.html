@@ -1,0 +1,2730 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Закони електротехніки | Інтерактивний додаток</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css">
+    <!-- Попереднє завантаження шрифтів -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- MathJax для математичних формул -->
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #2563eb;
+            --accent-color: #ef4444;
+            --background-color: #f3f4f6;
+            --text-color: #1f2937;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            line-height: 1.6;
+        }
+        
+        .gradient-header {
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        
+        .tab-active {
+            background-color: white;
+            color: var(--primary-color);
+            border-top: 3px solid var(--primary-color);
+            border-left: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+            border-bottom: none;
+        }
+        
+        .tab-inactive {
+            background-color: #f9fafb;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .content-active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #4b5563;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .formula {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f8fafc;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .range-slider {
+            width: 100%;
+        }
+
+        /* Canvas styles */
+        canvas {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+        }
+
+        /* Feedback styles */
+        .correct-answer {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .wrong-answer {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 1rem;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 0.75rem;
+            border-radius: 1rem;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 640px) {
+            .tab-container {
+                flex-direction: column;
+            }
+            
+            .tab {
+                width: 100%;
+                margin-bottom: 0.25rem;
+            }
+        }
+
+        /* Animation for electron movement */
+        @keyframes electronMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(100%); }
+        }
+
+        .electron {
+            height: 10px;
+            width: 10px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            position: absolute;
+            animation: electronMove 2s linear infinite;
+        }
+
+        /* For scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100">
+    <!-- Header -->
+    <header class="gradient-header p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold">Закони електротехніки</h1>
+            <div>
+                <span class="text-sm md:text-base">Інтерактивний навчальний додаток</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Progress Tracking -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold">Ваш навчальний прогрес</h2>
+                <span id="progress-percentage" class="font-bold text-blue-600">0%</span>
+            </div>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="flex mb-4 tab-container border-b border-gray-200">
+            <button class="tab tab-active py-2 px-4 mx-1 rounded-t-lg" data-tab="tab-intro">Вступ</button>
+            <button class="tab tab-inactive py-2 px-4 mx-1 rounded-t-lg" data-tab="tab-ohm">Закон Ома</button>
+            <button class="tab tab-inactive py-2 px-4 mx-1 rounded-t-lg" data-tab="tab-kirchhoff">Закони Кірхгофа</button>
+            <button class="tab tab-inactive py-2 px-4 mx-1 rounded-t-lg" data-tab="tab-joule">Закон Джоуля-Ленца</button>
+            <button class="tab tab-inactive py-2 px-4 mx-1 rounded-t-lg" data-tab="tab-induction">Електромагнітна індукція</button>
+            <button class="tab tab-inactive py-2 px-4 mx-1 rounded-t-lg" data-tab="tab-tests">Тести</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content bg-white p-6 rounded-lg shadow-md">
+            <!-- Introduction Tab -->
+            <section id="tab-intro" class="content-section content-active">
+                <h2 class="text-2xl font-bold mb-4">Вступ до законів електротехніки</h2>
+                <p class="mb-4">
+                    Вітаємо у інтерактивному додатку з вивчення основних законів електротехніки! Цей додаток допоможе вам
+                    зрозуміти та застосувати ключові електротехнічні закони через інтерактивні демонстрації, калькулятори та тести.
+                </p>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Що ви вивчите:</h3>
+                    <ul class="list-disc pl-6 mb-4">
+                        <li>Закон Ома для ділянки кола та повного кола</li>
+                        <li>Закони Кірхгофа для розрахунку складних електричних мереж</li>
+                        <li>Закон Джоуля-Ленца про теплову дію струму</li>
+                        <li>Закон електромагнітної індукції Фарадея</li>
+                    </ul>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Як користуватися додатком:</h3>
+                    <ol class="list-decimal pl-6 mb-4">
+                        <li>Використовуйте вкладки вгорі для переходу між розділами</li>
+                        <li>Взаємодійте з інтерактивними демонстраціями, змінюючи значення за допомогою повзунків</li>
+                        <li>Перевіряйте свої знання за допомогою тестів</li>
+                        <li>Ваш прогрес буде автоматично збережено для наступних сеансів</li>
+                    </ol>
+                </div>
+
+                <div class="card p-4 mb-6 bg-blue-50">
+                    <h3 class="text-lg font-semibold mb-2">Основні електричні величини</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-3 bg-white rounded-lg shadow-sm">
+                            <h4 class="font-bold">Сила струму (I)</h4>
+                            <p>Одиниця виміру: Ампер (А)</p>
+                            <p>Визначає кількість заряду, що проходить через поперечний переріз провідника за одиницю часу.</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg shadow-sm">
+                            <h4 class="font-bold">Напруга (U)</h4>
+                            <p>Одиниця виміру: Вольт (В)</p>
+                            <p>Визначає роботу, яку виконує електричне поле по переміщенню заряду.</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg shadow-sm">
+                            <h4 class="font-bold">Опір (R)</h4>
+                            <p>Одиниця виміру: Ом (Ω)</p>
+                            <p>Визначає протидію провідника проходженню електричного струму.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Тепер спробуємо!</h3>
+                    <p>Натисніть на вкладку "Закон Ома", щоб розпочати вивчення базового закону електротехніки.</p>
+                    <button id="start-button" class="btn-primary mt-4">Почати вивчення</button>
+                </div>
+            </section>
+
+            <!-- Ohm's Law Tab -->
+            <section id="tab-ohm" class="content-section">
+                <h2 class="text-2xl font-bold mb-4">Закон Ома</h2>
+                <p class="mb-4">
+                    Закон Ома встановлює співвідношення між силою струму, напругою та опором у електричному колі. 
+                    Він є одним з фундаментальних законів електротехніки.
+                </p>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Формулювання закону:</h3>
+                    <p class="mb-2">Сила струму в провіднику прямо пропорційна напрузі та обернено пропорційна опору.</p>
+                    <div class="formula text-center text-lg">I = U / R</div>
+                    <p class="mb-2">де:</p>
+                    <ul class="list-disc pl-6">
+                        <li>I - сила струму (у амперах, A)</li>
+                        <li>U - напруга (у вольтах, В)</li>
+                        <li>R - опір (у омах, Ω)</li>
+                    </ul>
+                </div>
+
+                <!-- Interactive Ohm's Law Demonstration -->
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Інтерактивна демонстрація</h3>
+                    <div class="mb-4">
+                        <p>Змініть значення напруги та опору, щоб побачити, як змінюється сила струму:</p>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <div class="slider-container">
+                                <label for="voltage-slider">Напруга (U): <span id="voltage-value">12</span> В</label>
+                                <input type="range" id="voltage-slider" class="range-slider" min="1" max="24" value="12" step="0.1">
+                            </div>
+                            
+                            <div class="slider-container">
+                                <label for="resistance-slider">Опір (R): <span id="resistance-value">4</span> Ω</label>
+                                <input type="range" id="resistance-slider" class="range-slider" min="0.1" max="10" value="4" step="0.1">
+                            </div>
+
+                            <div class="p-4 bg-gray-100 rounded-lg mt-4">
+                                <p class="font-semibold">Результат:</p>
+                                <p>Сила струму (I): <span id="current-value" class="font-bold text-blue-600">3</span> A</p>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="canvas-container">
+                                <canvas id="ohm-law-canvas" width="300" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Ohm's Law Calculator -->
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Калькулятор закону Ома</h3>
+                    <p class="mb-4">Введіть два відомих значення, щоб розрахувати третє:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label for="calc-current" class="block mb-2">Сила струму (A):</label>
+                            <input type="number" id="calc-current" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення">
+                        </div>
+                        <div>
+                            <label for="calc-voltage" class="block mb-2">Напруга (В):</label>
+                            <input type="number" id="calc-voltage" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення">
+                        </div>
+                        <div>
+                            <label for="calc-resistance" class="block mb-2">Опір (Ω):</label>
+                            <input type="number" id="calc-resistance" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4 mb-4">
+                        <button id="calc-current-btn" class="btn-primary flex-1">Розрахувати силу струму</button>
+                        <button id="calc-voltage-btn" class="btn-primary flex-1">Розрахувати напругу</button>
+                        <button id="calc-resistance-btn" class="btn-primary flex-1">Розрахувати опір</button>
+                    </div>
+
+                    <div id="calc-result" class="p-4 bg-blue-50 rounded-lg hidden">
+                        <p class="font-bold">Результат розрахунку:</p>
+                        <p id="calc-result-text"></p>
+                    </div>
+                </div>
+
+                <!-- Real-world applications -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3">Практичне застосування закону Ома:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Електричні мережі</h4>
+                            <p>Розрахунок навантаження електричних мереж, вибір правильного перетину проводів та розрахунок запобіжників.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Електронні пристрої</h4>
+                            <p>Проектування електронних схем, розрахунок параметрів компонентів (резисторів, конденсаторів, тощо).</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Побутова техніка</h4>
+                            <p>Розрахунок енергоспоживання, проектування систем захисту від перевантаження.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Автомобільна електрика</h4>
+                            <p>Розрахунок систем електроживлення, вибір правильних запобіжників та проводки.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between">
+                    <button class="btn-secondary go-to-tab" data-tab="tab-intro">← Назад до вступу</button>
+                    <button class="btn-primary go-to-tab" data-tab="tab-kirchhoff">Далі: Закони Кірхгофа →</button>
+                </div>
+            </section>
+
+            <!-- Kirchhoff's Laws Tab -->
+            <section id="tab-kirchhoff" class="content-section">
+                <h2 class="text-2xl font-bold mb-4">Закони Кірхгофа</h2>
+                <p class="mb-4">
+                    Закони Кірхгофа дозволяють аналізувати складні електричні кола з багатьма гілками та джерелами живлення.
+                    Вони є ключовими для розрахунку електричних мереж.
+                </p>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Перший закон Кірхгофа (закон вузлів):</h3>
+                    <p class="mb-2">Алгебраїчна сума струмів у вузлі дорівнює нулю. Тобто, сума струмів, що входять у вузол, дорівнює сумі струмів, що виходять з нього.</p>
+                    <div class="formula text-center text-lg">∑I = 0</div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Другий закон Кірхгофа (закон контурів):</h3>
+                    <p class="mb-2">У будь-якому замкненому контурі електричного кола алгебраїчна сума напруг дорівнює нулю.</p>
+                    <div class="formula text-center text-lg">∑U = 0</div>
+                </div>
+
+                <!-- Interactive Kirchhoff's Laws Demonstration -->
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Інтерактивна демонстрація законів Кірхгофа</h3>
+                    
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1">
+                            <h4 class="font-semibold mb-3">Перший закон Кірхгофа</h4>
+                            <p class="mb-3">Змініть значення струмів I1 та I2, що входять у вузол, і спостерігайте, як автоматично розраховується струм I3, що виходить з вузла.</p>
+                            
+                            <div class="slider-container">
+                                <label for="current1-slider">Струм I1: <span id="current1-value">2</span> А</label>
+                                <input type="range" id="current1-slider" class="range-slider" min="0" max="10" value="2" step="0.1">
+                            </div>
+                            
+                            <div class="slider-container">
+                                <label for="current2-slider">Струм I2: <span id="current2-value">3</span> А</label>
+                                <input type="range" id="current2-slider" class="range-slider" min="0" max="10" value="3" step="0.1">
+                            </div>
+                            
+                            <div class="p-4 bg-gray-100 rounded-lg mt-4">
+                                <p>Струм I3 (що виходить): <span id="current3-value" class="font-bold text-blue-600">5</span> А</p>
+                                <p class="mt-2 text-sm">За першим законом Кірхгофа: I1 + I2 = I3</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <canvas id="kirchhoff-node-canvas" width="300" height="220"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <hr class="my-4">
+                        <h4 class="font-semibold mb-3">Другий закон Кірхгофа</h4>
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="controls flex-1 space-y-4">
+                                <div>
+                                    <label class="block mb-2">Джерело E1: <span id="e1-value">6</span> В</label>
+                                    <input type="range" id="e1-slider" min="0" max="24" value="6" step="0.1" 
+                                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <button id="e1-polarity" class="mt-2 px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded">
+                                        Змінити полярність E1
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                    <label class="block mb-2">Джерело E2: <span id="e2-value">4</span> В</label>
+                                    <input type="range" id="e2-slider" min="0" max="24" value="4" step="0.1"
+                                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <button id="e2-polarity" class="mt-2 px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded">
+                                        Змінити полярність E2
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                    <label class="block mb-2">Опір R1: <span id="r1-value">2</span> Ω</label>
+                                    <input type="range" id="r1-slider" min="0.1" max="20" value="2" step="0.1"
+                                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                </div>
+
+                                <div class="results p-4 bg-gray-50 rounded">
+                                    <p>Падіння напруги на R1: <span id="voltage-drop-value" class="font-semibold">10</span> В</p>
+                                    <p class="mt-2">За другим законом Кірхгофа: E1 + E2 - I·R1 = <span id="kirchhoff-sum" class="font-semibold">0</span> В</p>
+                                </div>
+                            </div>
+
+                            <div class="circuit-display flex-1">
+                                <canvas id="kirchhoff-loop-canvas" width="400" height="300" 
+                                    class="border border-gray-300 bg-white"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kirchhoff's Laws Calculator -->
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Калькулятор для простого кола з двома джерелами</h3>
+                    <p class="mb-4">Розрахуйте струм у колі з двома послідовно з'єднаними джерелами напруги:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label for="calc-source1" class="block mb-2">Джерело E1 (В):</label>
+                            <input type="number" id="calc-source1" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="12">
+                        </div>
+                        <div>
+                            <label for="calc-source2" class="block mb-2">Джерело E2 (В):</label>
+                            <input type="number" id="calc-source2" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="6">
+                        </div>
+                        <div>
+                            <label for="calc-circuit-resistance" class="block mb-2">Загальний опір (Ω):</label>
+                            <input type="number" id="calc-circuit-resistance" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="3">
+                        </div>
+                    </div>
+
+                    <button id="calc-kirchhoff-btn" class="btn-primary">Розрахувати струм у колі</button>
+
+                    <div id="kirchhoff-result" class="p-4 bg-blue-50 rounded-lg mt-4 hidden">
+                        <p class="font-bold">Результат розрахунку:</p>
+                        <p id="kirchhoff-result-text"></p>
+                        <p class="mt-2 text-sm italic">*Напрямок струму визначається відносно загальної ЕРС в колі.</p>
+                    </div>
+                </div>
+
+                <!-- Real-world applications -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3">Практичне застосування законів Кірхгофа:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Проектування електронних схем</h4>
+                            <p>Аналіз складних електронних схем з багатьма гілками та компонентами.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Електричні мережі</h4>
+                            <p>Розрахунок і аналіз електромереж з декількома джерелами живлення.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Діагностика несправностей</h4>
+                            <p>Визначення несправностей у складних електричних колах.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Енергетичні системи</h4>
+                            <p>Аналіз розподілу енергії в складних енергетичних системах.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between">
+                    <button class="btn-secondary go-to-tab" data-tab="tab-ohm">← Назад до закону Ома</button>
+                    <button class="btn-primary go-to-tab" data-tab="tab-joule">Далі: Закон Джоуля-Ленца →</button>
+                </div>
+            </section>
+
+            <!-- Joule-Lenz Law Tab -->
+            <section id="tab-joule" class="content-section">
+                <h2 class="text-2xl font-bold mb-4">Закон Джоуля-Ленца</h2>
+                <p class="mb-4">
+                    Закон Джоуля-Ленца описує теплову дію електричного струму і дозволяє розрахувати кількість теплоти, 
+                    що виділяється в провіднику при проходженні через нього електричного струму.
+                </p>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Формулювання закону:</h3>
+                    <p class="mb-2">Кількість теплоти, що виділяється в провіднику при проходженні через нього електричного струму, прямо пропорційна квадрату сили струму, опору провідника та часу проходження струму:</p>
+                    <div class="formula text-center text-lg">Q = I² · R · t</div>
+                    <p class="mb-2">де:</p>
+                    <ul class="list-disc pl-6">
+                        <li>Q - кількість теплоти (у джоулях, Дж)</li>
+                        <li>I - сила струму (у амперах, A)</li>
+                        <li>R - опір (у омах, Ω)</li>
+                        <li>t - час (у секундах, с)</li>
+                    </ul>
+                </div>
+
+                <!-- Interactive Joule-Lenz Law Demonstration -->
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Інтерактивна демонстрація закону Джоуля-Ленца</h3>
+                    <p class="mb-4">Змініть значення сили струму, опору та часу, щоб побачити, скільки теплової енергії виділиться в провіднику:</p>
+                    
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1">
+                            <div class="slider-container">
+                                <label for="joule-current-slider">Сила струму (I): <span id="joule-current-value">2</span> А</label>
+                                <input type="range" id="joule-current-slider" class="range-slider" min="0.1" max="10" value="2" step="0.1">
+                            </div>
+                            
+                            <div class="slider-container">
+                                <label for="joule-resistance-slider">Опір (R): <span id="joule-resistance-value">5</span> Ω</label>
+                                <input type="range" id="joule-resistance-slider" class="range-slider" min="0.1" max="20" value="5" step="0.1">
+                            </div>
+                            
+                            <div class="slider-container">
+                                <label for="joule-time-slider">Час (t): <span id="joule-time-value">10</span> с</label>
+                                <input type="range" id="joule-time-slider" class="range-slider" min="1" max="60" value="10" step="1">
+                            </div>
+                            
+                            <div class="p-4 bg-gray-100 rounded-lg mt-4">
+                                <p>Теплова енергія (Q): <span id="heat-energy-value" class="font-bold text-blue-600">200</span> Дж</p>
+                                <p class="mt-2 text-sm">За законом Джоуля-Ленца: Q = I² · R · t</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <canvas id="joule-lenz-canvas" width="300" height="220"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Joule-Lenz Law Calculator -->
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Калькулятор закону Джоуля-Ленца</h3>
+                    <p class="mb-4">Розрахуйте будь-яку з величин, знаючи інші три:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label for="calc-heat" class="block mb-2">Теплова енергія (Дж):</label>
+                            <input type="number" id="calc-heat" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення">
+                        </div>
+                        <div>
+                            <label for="calc-joule-current" class="block mb-2">Струм (A):</label>
+                            <input type="number" id="calc-joule-current" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення">
+                        </div>
+                        <div>
+                            <label for="calc-joule-resistance" class="block mb-2">Опір (Ω):</label>
+                            <input type="number" id="calc-joule-resistance" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення">
+                        </div>
+                        <div>
+                            <label for="calc-time" class="block mb-2">Час (с):</label>
+                            <input type="number" id="calc-time" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button id="calc-heat-btn" class="btn-primary">Розрахувати теплову енергію</button>
+                        <button id="calc-joule-current-btn" class="btn-primary">Розрахувати струм</button>
+                        <button id="calc-joule-resistance-btn" class="btn-primary">Розрахувати опір</button>
+                        <button id="calc-time-btn" class="btn-primary">Розрахувати час</button>
+                    </div>
+
+                    <div id="joule-result" class="p-4 bg-blue-50 rounded-lg hidden">
+                        <p class="font-bold">Результат розрахунку:</p>
+                        <p id="joule-result-text"></p>
+                    </div>
+                </div>
+
+                <!-- Power calculation -->
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Розрахунок потужності електричного струму</h3>
+                    <p class="mb-4">Закон Джоуля-Ленца тісно пов'язаний з поняттям потужності електричного струму. Потужність (P) - це кількість енергії, що виділяється за одиницю часу:</p>
+                    
+                    <div class="formula text-center text-lg mb-4">P = I² · R = U · I = U² / R</div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label for="power-current" class="block mb-2">Струм (A):</label>
+                            <input type="number" id="power-current" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="2">
+                        </div>
+                        <div>
+                            <label for="power-voltage" class="block mb-2">Напруга (В):</label>
+                            <input type="number" id="power-voltage" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="220">
+                        </div>
+                        <div>
+                            <label for="power-resistance" class="block mb-2">Опір (Ω):</label>
+                            <input type="number" id="power-resistance" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="110">
+                        </div>
+                    </div>
+
+                    <button id="calc-power-btn" class="btn-primary">Розрахувати потужність</button>
+
+                    <div id="power-result" class="p-4 bg-blue-50 rounded-lg mt-4 hidden">
+                        <p class="font-bold">Результат розрахунку потужності:</p>
+                        <p id="power-result-text"></p>
+                    </div>
+                </div>
+
+                <!-- Real-world applications -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3">Практичне застосування закону Джоуля-Ленца:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Нагрівальні прилади</h4>
+                            <p>Електричні обігрівачі, плити, бойлери, тостери, фени працюють на основі теплової дії струму.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Електроосвітлення</h4>
+                            <p>Лампи розжарювання працюють завдяки нагріванню нитки розжарювання електричним струмом.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Електрозварювання</h4>
+                            <p>Зварювальні апарати використовують теплову дію струму для плавлення металу.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Системи захисту</h4>
+                            <p>Запобіжники розраховуються з урахуванням теплової дії струму для захисту від короткого замикання.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between">
+                    <button class="btn-secondary go-to-tab" data-tab="tab-kirchhoff">← Назад до законів Кірхгофа</button>
+                    <button class="btn-primary go-to-tab" data-tab="tab-induction">Далі: Електромагнітна індукція →</button>
+                </div>
+            </section>
+
+            <!-- Electromagnetic Induction Tab -->
+            <section id="tab-induction" class="content-section">
+                <h2 class="text-2xl font-bold mb-4">Закон електромагнітної індукції</h2>
+                <p class="mb-4">
+                    Закон електромагнітної індукції Фарадея встановлює, що електрорушійна сила (ЕРС) індукції в замкненому провідному контурі пропорційна швидкості зміни магнітного потоку через площу, обмежену цим контуром.
+                </p>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Формулювання закону:</h3>
+                    <p class="mb-2">ЕРС індукції в замкненому контурі чисельно дорівнює і протилежна за знаком швидкості зміни магнітного потоку через поверхню, обмежену цим контуром:</p>
+                    <div class="formula text-center text-lg">ε = -dΦ/dt</div>
+                    <p class="mb-2">де:</p>
+                    <ul class="list-disc pl-6">
+                        <li>ε - електрорушійна сила індукції (у вольтах, В)</li>
+                        <li>Φ - магнітний потік (у веберах, Вб)</li>
+                        <li>t - час (у секундах, с)</li>
+                        <li>dΦ/dt - швидкість зміни магнітного потоку</li>
+                    </ul>
+                    <p class="mt-2">Знак "мінус" у формулі відображає правило Ленца: індукційний струм завжди має такий напрям, що створене ним магнітне поле протидіє зміні магнітного потоку, яка викликала цей струм.</p>
+                </div>
+
+                <!-- Interactive Electromagnetic Induction Demonstration -->
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Інтерактивна демонстрація електромагнітної індукції</h3>
+                    <p class="mb-4">Перемістіть магніт відносно котушки, щоб спостерігати явище електромагнітної індукції:</p>
+                    
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1">
+                            <div class="slider-container">
+                                <label for="magnet-position-slider">Положення магніту: <span id="magnet-position-value">0</span></label>
+                                <input type="range" id="magnet-position-slider" class="range-slider" min="-100" max="100" value="0" step="1">
+                            </div>
+                            
+                            <div class="slider-container">
+                                <label for="magnet-speed-slider">Швидкість руху магніту: <span id="magnet-speed-value">5</span></label>
+                                <input type="range" id="magnet-speed-slider" class="range-slider" min="1" max="10" value="5" step="1">
+                            </div>
+                            
+                            <div class="p-4 bg-gray-100 rounded-lg mt-4">
+                                <p>ЕРС індукції: <span id="emf-value" class="font-bold text-blue-600">0</span> В</p>
+                                <p class="mt-2 text-sm">Напрям струму в котушці: <span id="current-direction"></span></p>
+                            </div>
+
+                            <button id="start-animation-btn" class="btn-primary mt-4">Почати рух магніту</button>
+                            <button id="stop-animation-btn" class="btn-secondary mt-4 ml-2">Зупинити</button>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <canvas id="induction-canvas" width="320" height="240"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Electromagnetic Induction Calculator -->
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Калькулятор електромагнітної індукції</h3>
+                    <p class="mb-4">Розрахуйте ЕРС індукції для різних параметрів:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label for="magnetic-flux-initial" class="block mb-2">Початковий магнітний потік (Вб):</label>
+                            <input type="number" id="magnetic-flux-initial" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="0.5">
+                        </div>
+                        <div>
+                            <label for="magnetic-flux-final" class="block mb-2">Кінцевий магнітний потік (Вб):</label>
+                            <input type="number" id="magnetic-flux-final" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="0.8">
+                        </div>
+                        <div>
+                            <label for="time-change" class="block mb-2">Час зміни потоку (с):</label>
+                            <input type="number" id="time-change" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="0.1">
+                        </div>
+                    </div>
+
+                    <button id="calc-emf-btn" class="btn-primary">Розрахувати ЕРС індукції</button>
+
+                    <div id="emf-result" class="p-4 bg-blue-50 rounded-lg mt-4 hidden">
+                        <p class="font-bold">Результат розрахунку:</p>
+                        <p id="emf-result-text"></p>
+                        <p class="mt-2 text-sm italic">*Знак "-" вказує на напрям ЕРС згідно з правилом Ленца.</p>
+                    </div>
+                </div>
+
+                <!-- Faraday's Law Calculator (N coils) -->
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Розрахунок ЕРС для котушки з N витків</h3>
+                    <p class="mb-4">Для котушки з декількома витками ЕРС індукції розраховується за формулою:</p>
+                    
+                    <div class="formula text-center text-lg mb-4">ε = -N · dΦ/dt</div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label for="coil-turns" class="block mb-2">Кількість витків (N):</label>
+                            <input type="number" id="coil-turns" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="100">
+                        </div>
+                        <div>
+                            <label for="flux-change-rate" class="block mb-2">Швидкість зміни потоку (Вб/с):</label>
+                            <input type="number" id="flux-change-rate" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="0.02">
+                        </div>
+                        <div>
+                            <label for="coil-resistance" class="block mb-2">Опір котушки (Ω):</label>
+                            <input type="number" id="coil-resistance" class="w-full p-2 border border-gray-300 rounded" placeholder="Введіть значення" value="10">
+                        </div>
+                        <div>
+                            <button id="calc-coil-btn" class="btn-primary h-full w-full">Розрахувати ЕРС та струм</button>
+                        </div>
+                    </div>
+
+                    <div id="coil-result" class="p-4 bg-blue-50 rounded-lg hidden">
+                        <p class="font-bold">Результат розрахунку:</p>
+                        <p id="coil-emf-text"></p>
+                        <p id="coil-current-text" class="mt-2"></p>
+                    </div>
+                </div>
+
+                <!-- Real-world applications -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3">Практичне застосування закону електромагнітної індукції:</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Електрогенератори</h4>
+                            <p>Перетворення механічної енергії в електричну через обертання магніту всередині котушки.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Трансформатори</h4>
+                            <p>Підвищення або зниження напруги змінного струму за рахунок явища взаємної індукції.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Індукційні плити</h4>
+                            <p>Нагрівання металевого посуду за допомогою вихрових струмів, що виникають при електромагнітній індукції.</p>
+                        </div>
+                        <div class="card p-4">
+                            <h4 class="font-bold mb-2">Електродвигуни</h4>
+                            <p>Перетворення електричної енергії в механічну за допомогою електромагнітної взаємодії.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between">
+                    <button class="btn-secondary go-to-tab" data-tab="tab-joule">← Назад до закону Джоуля-Ленца</button>
+                    <button class="btn-primary go-to-tab" data-tab="tab-tests">Далі: Тести →</button>
+                </div>
+            </section>
+
+            <!-- Tests Tab -->
+            <section id="tab-tests" class="content-section">
+                <h2 class="text-2xl font-bold mb-4">Тестування знань</h2>
+                <p class="mb-4">
+                    Перевірте своє розуміння законів електротехніки, відповівши на питання тестів. 
+                    Виберіть правильну відповідь для кожного запитання та отримайте миттєвий зворотний зв'язок.
+                </p>
+
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Виберіть тему для тестування:</h3>
+                        <div>
+                            <span class="mr-2">Ваш результат:</span>
+                            <span id="test-score" class="font-bold">0/0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button class="btn-primary test-category-btn" data-category="ohm">Закон Ома</button>
+                        <button class="btn-primary test-category-btn" data-category="kirchhoff">Закони Кірхгофа</button>
+                        <button class="btn-primary test-category-btn" data-category="joule">Закон Джоуля-Ленца</button>
+                        <button class="btn-primary test-category-btn" data-category="induction">Електромагнітна індукція</button>
+                        <button class="btn-primary test-category-btn" data-category="all">Усі теми</button>
+                    </div>
+                </div>
+
+                <div id="test-container" class="card p-6 mb-6 hidden">
+                    <h3 id="test-title" class="text-xl font-semibold mb-4">Тест: Закон Ома</h3>
+                    
+                    <div id="questions-container">
+                        <!-- Questions will be generated here dynamically -->
+                    </div>
+                    
+                    <div class="mt-6 flex justify-between">
+                        <button id="check-answers-btn" class="btn-primary">Перевірити відповіді</button>
+                        <button id="reset-test-btn" class="btn-secondary">Скинути тест</button>
+                    </div>
+                </div>
+
+                <div id="test-results" class="card p-6 mb-6 hidden">
+                    <h3 class="text-xl font-semibold mb-4">Результати тестування</h3>
+                    
+                    <div class="mb-4">
+                        <p>Ви відповіли правильно на <span id="correct-answers" class="font-bold text-green-600">0</span> з <span id="total-questions" class="font-bold">0</span> питань.</p>
+                        <div class="progress-container mt-2">
+                            <div id="test-progress-bar" class="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="test-feedback" class="p-4 bg-blue-50 rounded-lg">
+                        <!-- Feedback will be generated here dynamically -->
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button id="try-again-btn" class="btn-primary">Спробувати ще раз</button>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold mb-3">Підказки для тестування:</h3>
+                    <ul class="list-disc pl-6">
+                        <li>Зосередьтеся на розумінні фізичного змісту законів, а не лише на формулах</li>
+                        <li>Спробуйте пояснити відповідь власними словами перед тим, як вибрати варіант</li>
+                        <li>При розв'язанні задач, спочатку визначте, який закон потрібно застосувати</li>
+                        <li>Звертайте увагу на одиниці вимірювання величин</li>
+                        <li>Після отримання результату, перевірте, чи є він фізично обґрунтованим</li>
+                    </ul>
+                </div>
+
+                <div class="flex justify-between">
+                    <button class="btn-secondary go-to-tab" data-tab="tab-induction">← Назад до електромагнітної індукції</button>
+                    <button class="btn-primary go-to-tab" data-tab="tab-intro">На початок →</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gradient-header p-4 text-white mt-8">
+        <div class="container mx-auto text-center">
+            <p>© 2023 Інтерактивний додаток "Закони електротехніки"</p>
+            <p class="text-sm mt-2">Розроблено для учнів професійно-технічних училищ</p>
+        </div>
+    </footer>
+
+    <script>
+        // Функція для ініціалізації всіх інтерактивних елементів
+        document.addEventListener('DOMContentLoaded', function() {
+            initTabs();
+            initOhmDemo();
+            initOhmCalculator();
+            initKirchhoffDemo();
+            initKirchhoffCalculator();
+            initJouleLenzDemo();
+            initJouleLenzCalculator();
+            initInductionDemo();
+            initInductionCalculator();
+            initCoilCalculator(); // Додано новий калькулятор
+            initTests();
+            updateProgress();
+        });
+
+        // Функція для роботи з вкладками
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const sections = document.querySelectorAll('.content-section');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.getAttribute('data-tab');
+                    
+                    // Оновлення класів для вкладок
+                    tabs.forEach(t => t.classList.replace('tab-active', 'tab-inactive'));
+                    tab.classList.replace('tab-inactive', 'tab-active');
+                    
+                    // Оновлення видимості секцій
+                    sections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.add('content-active');
+                        } else {
+                            section.classList.remove('content-active');
+                        }
+                    });
+                    
+                    // Оновлення прогресу
+                    updateProgress();
+                });
+            });
+            
+            // Обробка кнопок навігації
+            document.querySelectorAll('.go-to-tab').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-tab');
+                    document.querySelector(`[data-tab="${targetId}"]`).click();
+                });
+            });
+        }
+
+        // Функція для демонстрації закону Ома
+        function initOhmDemo() {
+            const canvas = document.getElementById('ohm-law-canvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // Початкові значення
+            let voltage = 12;
+            let resistance = 4;
+            let current = voltage / resistance;
+
+            // Функція малювання схеми
+            function drawCircuit() {
+                ctx.clearRect(0, 0, width, height);
+                
+                // Основні налаштування
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.font = '14px Arial';
+
+                // Малюємо контур схеми
+                ctx.beginPath();
+                ctx.moveTo(50, 50);      // Початок зліва
+                ctx.lineTo(150, 50);     // Верхня лінія до резистора
+                ctx.lineTo(300, 50);     // Верхня лінія після резистора
+                ctx.lineTo(300, 150);    // Права вертикальна лінія
+                ctx.lineTo(50, 150);     // Нижня лінія
+                ctx.lineTo(50, 50);      // Ліва вертикальна лінія
+                ctx.stroke();
+
+                // Малюємо джерело (гальванічний елемент)
+                drawVoltageSource(50, 100, voltage);
+
+                // Малюємо резистор
+                drawResistor(200, 50, resistance);
+
+                // Малюємо стрілку струму
+                drawCurrentArrow(175, 100, current);
+            }
+
+            function drawVoltageSource(x, y, value) {
+                // Малюємо коло для джерела
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+
+                // Малюємо полярність всередині кола
+                ctx.beginPath();
+                ctx.moveTo(x, y - 15);
+                ctx.lineTo(x, y + 15);
+                ctx.moveTo(x - 10, y - 10);
+                ctx.lineTo(x + 10, y - 10);
+                ctx.stroke();
+
+                // Позначення полярності збоку
+                ctx.fillStyle = '#000';
+                ctx.fillText('+', x - 30, y - 5);
+                ctx.fillText('−', x - 30, y + 15);
+
+                // Значення напруги
+                ctx.fillText(`U = ${value}В`, x + 25, y);
+            }
+
+            function drawResistor(x, y, value) {
+                // Малюємо прямокутник для резистора
+                const width = 50;
+                const height = 30;
+                
+                // Білий фон
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(x - width/2, y - height/2, width, height);
+                
+                // Контур резистора
+                ctx.strokeRect(x - width/2, y - height/2, width, height);
+
+                // Значення опору
+                ctx.fillStyle = '#000';
+                ctx.fillText(`R = ${value}Ω`, x - 20, y - 25);
+            }
+
+            function drawCurrentArrow(x, y, value) {
+                // Малюємо пунктирне коло для позначення напрямку струму
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.arc(x, y, 30, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Малюємо стрілку
+                const angle = 0;
+                const arrowX = x + 30;
+                const arrowY = y;
+                
+                ctx.beginPath();
+                ctx.moveTo(arrowX, arrowY);
+                ctx.lineTo(arrowX - 10, arrowY - 10);
+                ctx.lineTo(arrowX - 10, arrowY + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                // Значення струму
+                ctx.fillText(`I = ${value.toFixed(2)}A`, x - 20, y + 45);
+            }
+
+            // Оновлення схеми при зміні значень
+            function updateCircuit() {
+                current = voltage / resistance;
+                drawCircuit();
+            }
+
+            // Обробники подій для повзунків
+            const voltageSlider = document.getElementById('voltage-slider');
+            const resistanceSlider = document.getElementById('resistance-slider');
+            const voltageValue = document.getElementById('voltage-value');
+            const resistanceValue = document.getElementById('resistance-value');
+            const currentValue = document.getElementById('current-value');
+
+            if (voltageSlider && voltageValue) {
+                voltageSlider.addEventListener('input', (e) => {
+                    voltage = parseFloat(e.target.value);
+                    voltageValue.textContent = voltage;
+                    updateCircuit();
+                    if (currentValue) {
+                        currentValue.textContent = current.toFixed(2);
+                    }
+                });
+            }
+
+            if (resistanceSlider && resistanceValue) {
+                resistanceSlider.addEventListener('input', (e) => {
+                    resistance = parseFloat(e.target.value);
+                    resistanceValue.textContent = resistance;
+                    updateCircuit();
+                    if (currentValue) {
+                        currentValue.textContent = current.toFixed(2);
+                    }
+                });
+            }
+
+            // Початкове відображення
+            updateCircuit();
+        }
+
+        // Ініціалізація при завантаженні сторінки
+        document.addEventListener('DOMContentLoaded', () => {
+            initOhmDemo();
+        });
+
+        // Калькулятор закону Ома
+        function initOhmCalculator() {
+            const calcCurrent = document.getElementById('calc-current');
+            const calcVoltage = document.getElementById('calc-voltage');
+            const calcResistance = document.getElementById('calc-resistance');
+            const calcResult = document.getElementById('calc-result');
+            const calcResultText = document.getElementById('calc-result-text');
+
+            // Встановлення початкових значень
+            calcCurrent.value = "1";
+            calcVoltage.value = "220";
+            calcResistance.value = "220";
+
+            document.getElementById('calc-current-btn').addEventListener('click', () => {
+                if (calcVoltage.value && calcResistance.value) {
+                    const current = parseFloat(calcVoltage.value) / parseFloat(calcResistance.value);
+                    calcResult.classList.remove('hidden');
+                    calcResultText.textContent = `Сила струму: ${current.toFixed(2)} А`;
+                }
+            });
+
+            document.getElementById('calc-voltage-btn').addEventListener('click', () => {
+                if (calcCurrent.value && calcResistance.value) {
+                    const voltage = parseFloat(calcCurrent.value) * parseFloat(calcResistance.value);
+                    calcResult.classList.remove('hidden');
+                    calcResultText.textContent = `Напруга: ${voltage.toFixed(2)} В`;
+                }
+            });
+
+            document.getElementById('calc-resistance-btn').addEventListener('click', () => {
+                if (calcVoltage.value && calcCurrent.value) {
+                    const resistance = parseFloat(calcVoltage.value) / parseFloat(calcCurrent.value);
+                    calcResult.classList.remove('hidden');
+                    calcResultText.textContent = `Опір: ${resistance.toFixed(2)} Ω`;
+                }
+            });
+        }
+
+        // Функція для демонстрації законів Кірхгофа
+        function initKirchhoffDemo() {
+            const canvas = document.getElementById('kirchhoff-loop-canvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // Стан схеми
+            let state = {
+                e1: {
+                    value: 6,
+                    polarity: 1, // 1 або -1
+                    x: 100,
+                    y: 150
+                },
+                e2: {
+                    value: 4,
+                    polarity: 1,
+                    x: 300,
+                    y: 150
+                },
+                r1: {
+                    value: 2,
+                    x: 200,
+                    y: 75
+                },
+                current: {
+                    value: 0,
+                    direction: 1
+                }
+            };
+
+            // Оновлення значень при зміні повзунків
+            function setupSliders() {
+                const e1Slider = document.getElementById('e1-slider');
+                const e2Slider = document.getElementById('e2-slider');
+                const r1Slider = document.getElementById('r1-slider');
+                const e1Value = document.getElementById('e1-value');
+                const e2Value = document.getElementById('e2-value');
+                const r1Value = document.getElementById('r1-value');
+
+                if (e1Slider && e1Value) {
+                    e1Slider.addEventListener('input', (e) => {
+                        state.e1.value = parseFloat(e.target.value);
+                        e1Value.textContent = state.e1.value;
+                        updateCircuit();
+                    });
+                }
+
+                if (e2Slider && e2Value) {
+                    e2Slider.addEventListener('input', (e) => {
+                        state.e2.value = parseFloat(e.target.value);
+                        e2Value.textContent = state.e2.value;
+                        updateCircuit();
+                    });
+                }
+
+                if (r1Slider && r1Value) {
+                    r1Slider.addEventListener('input', (e) => {
+                        state.r1.value = parseFloat(e.target.value);
+                        r1Value.textContent = state.r1.value;
+                        updateCircuit();
+                    });
+                }
+            }
+
+            // Кнопки зміни полярності
+            function setupPolarityButtons() {
+                const e1PolarityBtn = document.getElementById('e1-polarity');
+                const e2PolarityBtn = document.getElementById('e2-polarity');
+
+                if (e1PolarityBtn) {
+                    e1PolarityBtn.addEventListener('click', () => {
+                        state.e1.polarity *= -1;
+                        updateCircuit();
+                    });
+                }
+
+                if (e2PolarityBtn) {
+                    e2PolarityBtn.addEventListener('click', () => {
+                        state.e2.polarity *= -1;
+                        updateCircuit();
+                    });
+                }
+            }
+
+            function updateCircuit() {
+                // Розрахунок струму
+                const totalEmf = state.e1.value * state.e1.polarity + state.e2.value * state.e2.polarity;
+                state.current.value = totalEmf / state.r1.value;
+                state.current.direction = state.current.value >= 0 ? 1 : -1;
+                
+                // Оновлення відображення
+                drawCircuit();
+                
+                // Оновлення результатів
+                updateResults();
+            }
+
+            function drawCircuit() {
+                ctx.clearRect(0, 0, width, height);
+                
+                // Основні налаштування
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.font = '14px Arial';
+                
+                // Малюємо контур
+                ctx.beginPath();
+                ctx.moveTo(100, 75);  // Верхня лінія
+                ctx.lineTo(300, 75);
+                ctx.lineTo(300, 225); // Права лінія
+                ctx.lineTo(100, 225); // Нижня лінія
+                ctx.lineTo(100, 75);  // Ліва лінія
+                ctx.stroke();
+                
+                // Малюємо елементи
+                drawVoltageSource(state.e1.x, state.e1.y, 'E1', state.e1.value, state.e1.polarity);
+                drawVoltageSource(state.e2.x, state.e2.y, 'E2', state.e2.value, state.e2.polarity);
+                drawResistor(state.r1.x, state.r1.y, 'R1', state.r1.value);
+                drawCurrentArrow(state.current.value, state.current.direction);
+            }
+
+            function drawVoltageSource(x, y, label, value, polarity) {
+                // Довга вертикальна лінія
+                ctx.beginPath();
+                ctx.moveTo(x, y - 20);
+                ctx.lineTo(x, y + 20);
+                ctx.stroke();
+
+                // Позначення полярності
+                ctx.font = '16px Arial';
+                const plusY = polarity > 0 ? y - 25 : y + 25;
+                const minusY = polarity > 0 ? y + 25 : y - 25;
+                ctx.fillText('+', x - 5, plusY);
+                ctx.fillText('−', x - 5, minusY);
+
+                // Значення ЕРС
+                ctx.font = '14px Arial';
+                ctx.fillText(`${label}=${Math.abs(value)}В`, x - 30, y);
+            }
+
+            function drawResistor(x, y, label, value) {
+                // Зигзагоподібний резистор
+                ctx.beginPath();
+                ctx.moveTo(x - 20, y);
+                let currentX = x - 15;
+                
+                for (let i = 0; i < 6; i++) {
+                    ctx.lineTo(currentX, y + (i % 2 === 0 ? 10 : -10));
+                    currentX += 7;
+                }
+                
+                ctx.lineTo(x + 20, y);
+                ctx.stroke();
+
+                // Позначення
+                ctx.fillText(`${label}=${value}Ω`, x - 30, y - 15);
+            }
+
+            function drawCurrentArrow(current, direction) {
+                const x = 200;
+                const y = 150;
+                const radius = 30;
+                const angle = direction > 0 ? 0 : Math.PI;
+                
+                // Стрілка струму
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                // Наконечник стрілки
+                const arrowX = x + radius * Math.cos(angle);
+                const arrowY = y + radius * Math.sin(angle);
+                
+                ctx.beginPath();
+                ctx.moveTo(arrowX, arrowY);
+                ctx.lineTo(arrowX - 10 * Math.cos(angle - 0.5), arrowY - 10 * Math.sin(angle - 0.5));
+                ctx.lineTo(arrowX - 10 * Math.cos(angle + 0.5), arrowY - 10 * Math.sin(angle + 0.5));
+                ctx.closePath();
+                ctx.fill();
+
+                // Значення струму
+                ctx.fillText(`I=${Math.abs(current).toFixed(2)}A`, x - 30, y);
+            }
+
+            function updateResults() {
+                const voltageDropValue = document.getElementById('voltage-drop-value');
+                const kirchhoffSum = document.getElementById('kirchhoff-sum');
+                
+                const voltageDrop = Math.abs(state.current.value * state.r1.value);
+                const sum = state.e1.value * state.e1.polarity + 
+                           state.e2.value * state.e2.polarity - 
+                           voltageDrop;
+                
+                if (voltageDropValue) {
+                    voltageDropValue.textContent = voltageDrop.toFixed(2);
+                }
+                
+                if (kirchhoffSum) {
+                    kirchhoffSum.textContent = Math.abs(sum).toFixed(2);
+                }
+            }
+
+            // Ініціалізація
+            setupSliders();
+            setupPolarityButtons();
+            updateCircuit();
+        }
+
+        // Функція для демонстрації законів Кірхгофа
+        function initKirchhoffDemo() {
+            const current1Slider = document.getElementById('current1-slider');
+            const current2Slider = document.getElementById('current2-slider');
+            const current1Value = document.getElementById('current1-value');
+            const current2Value = document.getElementById('current2-value');
+            const current3Value = document.getElementById('current3-value');
+            
+            function updateCurrents() {
+                const i1 = parseFloat(current1Slider.value);
+                const i2 = parseFloat(current2Slider.value);
+                const i3 = (i1 + i2).toFixed(1);
+                
+                current1Value.textContent = i1;
+                current2Value.textContent = i2;
+                current3Value.textContent = i3;
+                
+                // Оновлення візуалізації вузла
+                const canvas = document.getElementById('kirchhoff-node-canvas');
+                if (canvas && canvas.getContext) {
+                    drawNode(canvas.getContext('2d'), i1, i2, i3);
+                }
+            }
+            
+            current1Slider.addEventListener('input', updateCurrents);
+            current2Slider.addEventListener('input', updateCurrents);
+            
+            // Початкове оновлення
+            updateCurrents();
+        }
+
+        // Функція для малювання вузла (закони Кірхгофа)
+        function drawNode(ctx, i1, i2, i3) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            
+            // Малювання вузла
+            ctx.beginPath();
+            ctx.arc(150, 110, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#2563eb';
+            ctx.fill();
+            
+            // Малювання стрілок струму
+            drawArrow(ctx, 150, 50, 150, 105, `I₁ = ${i1}A`, 'down'); // Вхідний струм 1
+            drawArrow(ctx, 90, 110, 145, 110, `I₂ = ${i2}A`, 'right'); // Вхідний струм 2
+            drawArrow(ctx, 150, 115, 150, 170, `I₃ = ${i3}A`, 'down'); // Вихідний струм
+        }
+
+        // Функція для малювання стрілки
+        function drawArrow(ctx, fromX, fromY, toX, toY, text, direction) {
+            const headLength = 10;
+            const headAngle = Math.PI / 6;
+            
+            // Малювання лінії
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Малювання наконечника стрілки
+            let angle;
+            if (direction === 'down') {
+                angle = Math.PI / 2;
+            } else if (direction === 'right') {
+                angle = 0;
+            }
+            
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headLength * Math.cos(angle - headAngle),
+                       toY - headLength * Math.sin(angle - headAngle));
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headLength * Math.cos(angle + headAngle),
+                       toY - headLength * Math.sin(angle + headAngle));
+            ctx.stroke();
+            
+            // Додавання тексту
+            ctx.fillStyle = '#1f2937';
+            ctx.font = '14px Arial';
+            if (direction === 'down') {
+                ctx.fillText(text, toX + 10, (fromY + toY) / 2);
+            } else {
+                ctx.fillText(text, (fromX + toX) / 2 - 30, toY - 10);
+            }
+        }
+
+        // Функція для демонстрації закону Джоуля-Ленца
+        function initJouleLenzDemo() {
+            const currentSlider = document.getElementById('joule-current-slider');
+            const resistanceSlider = document.getElementById('joule-resistance-slider');
+            const timeSlider = document.getElementById('joule-time-slider');
+            
+            const currentValue = document.getElementById('joule-current-value');
+            const resistanceValue = document.getElementById('joule-resistance-value');
+            const timeValue = document.getElementById('joule-time-value');
+            const energyValue = document.getElementById('heat-energy-value');
+            
+            function updateValues() {
+                const current = parseFloat(currentSlider.value);
+                const resistance = parseFloat(resistanceSlider.value);
+                const time = parseFloat(timeSlider.value);
+                
+                const energy = (current * current * resistance * time).toFixed(1);
+                
+                currentValue.textContent = current;
+                resistanceValue.textContent = resistance;
+                timeValue.textContent = time;
+                energyValue.textContent = energy;
+                
+                // Оновлення візуалізації
+                const canvas = document.getElementById('joule-lenz-canvas');
+                if (canvas && canvas.getContext) {
+                    drawHeating(canvas.getContext('2d'), current, resistance, time, energy);
+                }
+            }
+            
+            currentSlider.addEventListener('input', updateValues);
+            resistanceSlider.addEventListener('input', updateValues);
+            timeSlider.addEventListener('input', updateValues);
+            
+            // Початкове оновлення
+            updateValues();
+        }
+
+        // Функція для малювання нагрівання провідника
+        function drawHeating(ctx, current, resistance, time, energy) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            
+            // Малювання провідника
+            const maxEnergy = 1000; // Максимальна енергія для візуалізації
+            const normalizedEnergy = Math.min(energy / maxEnergy, 1);
+            
+            // Градієнт кольору від синього до червоного
+            const gradient = ctx.createLinearGradient(50, 100, 250, 100);
+            gradient.addColorStop(0, '#3b82f6');
+            gradient.addColorStop(normalizedEnergy, '#ef4444');
+            gradient.addColorStop(1, '#3b82f6');
+            
+            // Малювання провідника
+            ctx.beginPath();
+            ctx.rect(50, 90, 200, 20);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.strokeStyle = '#1f2937';
+            ctx.stroke();
+            
+            // Додавання написів
+            ctx.fillStyle = '#1f2937';
+            ctx.font = '14px Arial';
+            ctx.fillText(`Теплова енергія: ${energy} Дж`, 70, 150);
+            ctx.fillText(`Температура: ${Math.round(normalizedEnergy * 100)}°C`, 70, 170);
+        }
+
+        // Функція для демонстрації електромагнітної індукції
+        function initInductionDemo() {
+            const positionSlider = document.getElementById('magnet-position-slider');
+            const speedSlider = document.getElementById('magnet-speed-slider');
+            let animationId = null;
+            
+            const startButton = document.getElementById('start-animation-btn');
+            const stopButton = document.getElementById('stop-animation-btn');
+            
+            function updateValues() {
+                const position = parseFloat(positionSlider.value);
+                const speed = parseFloat(speedSlider.value);
+                
+                document.getElementById('magnet-position-value').textContent = position;
+                document.getElementById('magnet-speed-value').textContent = speed;
+                
+                // Розрахунок ЕРС
+                const emf = calculateEMF(position, speed);
+                document.getElementById('emf-value').textContent = Math.abs(emf).toFixed(2);
+                document.getElementById('current-direction').textContent = 
+                    emf > 0 ? '→ за годинниковою стрілкою' : '← проти годинникової стрілки';
+                
+                // Оновлення візуалізації
+                const canvas = document.getElementById('induction-canvas');
+                if (canvas && canvas.getContext) {
+                    drawInduction(canvas.getContext('2d'), position, emf);
+                }
+            }
+            
+            function animate() {
+                let position = parseFloat(positionSlider.value);
+                const speed = parseFloat(speedSlider.value);
+                
+                position += speed;
+                if (position > 100) position = -100;
+                
+                positionSlider.value = position;
+                updateValues();
+                
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            startButton.addEventListener('click', () => {
+                if (!animationId) {
+                    animate();
+                }
+            });
+            
+            stopButton.addEventListener('click', () => {
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+            });
+            
+            positionSlider.addEventListener('input', updateValues);
+            speedSlider.addEventListener('input', updateValues);
+            
+            // Початкове оновлення
+            updateValues();
+        }
+
+        // Функція для розрахунку ЕРС індукції
+        function calculateEMF(position, speed) {
+            // Спрощена модель: ЕРС пропорційна швидкості та залежить від положення
+            const maxEMF = 5; // Максимальне значення ЕРС
+            const distanceEffect = 1 - Math.min(Math.abs(position) / 100, 1);
+            return -speed * distanceEffect * maxEMF;
+        }
+
+        // Функція для малювання електромагнітної індукції
+        function drawInduction(ctx, position, emf) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            
+            // Малювання котушки
+            ctx.beginPath();
+            ctx.strokeStyle = '#1f2937';
+            ctx.lineWidth = 2;
+            
+            // Витки котушки
+            for (let i = 0; i < 10; i++) {
+                ctx.beginPath();
+                ctx.arc(160, 80 + i * 8, 40, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Малювання магніту
+            const magnetX = 160 + position;
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(magnetX - 10, 60, 20, 100);
+            
+            // Позначення полюсів магніту
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '16px Arial';
+            ctx.fillText('N', magnetX - 5, 80);
+            ctx.fillText('S', magnetX - 5, 140);
+            
+            // Візуалізація магнітного поля
+            const fieldIntensity = Math.abs(emf) / 5;
+            ctx.strokeStyle = `rgba(37, 99, 235, ${fieldIntensity})`;
+            
+            for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 8) {
+                const radius = 50;
+                ctx.beginPath();
+                ctx.arc(magnetX, 110, radius, angle, angle + Math.PI / 16);
+                ctx.stroke();
+            }
+        }
+
+        // Функція для ініціалізації тестів
+        function initTests() {
+            const categoryButtons = document.querySelectorAll('.test-category-btn');
+            const testContainer = document.getElementById('test-container');
+            const questionsContainer = document.getElementById('questions-container');
+            const checkAnswersBtn = document.getElementById('check-answers-btn');
+            const resetTestBtn = document.getElementById('reset-test-btn');
+            const testResults = document.getElementById('test-results');
+            const correctAnswers = document.getElementById('correct-answers');
+            const totalQuestions = document.getElementById('total-questions');
+            const testProgressBar = document.getElementById('test-progress-bar');
+            const testFeedback = document.getElementById('test-feedback');
+            
+            let currentCategory = '';
+            
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    currentCategory = button.getAttribute('data-category');
+                    showTest(currentCategory);
+                });
+            });
+            
+            checkAnswersBtn.addEventListener('click', () => {
+                const questions = currentCategory === 'all' 
+                    ? [...Object.values(testData)].flat()
+                    : testData[currentCategory];
+                    
+                let correct = 0;
+                const answers = [];
+                
+                questions.forEach((q, index) => {
+                    const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                    if (selected && parseInt(selected.value) === q.correct) {
+                        correct++;
+                        answers.push(true);
+                    } else {
+                        answers.push(false);
+                    }
+                });
+                
+                showResults(correct, questions.length, answers, questions);
+            });
+            
+            resetTestBtn.addEventListener('click', () => {
+                showTest(currentCategory);
+                testResults.classList.add('hidden');
+            });
+            
+            function showResults(correct, total, answers, questions) {
+                testResults.classList.remove('hidden');
+                correctAnswers.textContent = correct;
+                totalQuestions.textContent = total;
+                testProgressBar.style.width = `${(correct / total) * 100}%`;
+                
+                testFeedback.innerHTML = questions.map((q, i) => `
+                    <div class="mb-2 ${answers[i] ? 'text-green-600' : 'text-red-600'}">
+                        <p class="font-semibold">${i + 1}. ${q.question}</p>
+                        <p>Правильна відповідь: ${q.options[q.correct]}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Функція для оновлення прогресу
+        function updateProgress() {
+            const totalSections = document.querySelectorAll('.content-section').length;
+            const visitedSections = new Set();
+            
+            // Логіка для визначення відвіданих розділів
+            // Тут можна додати збереження прогресу в localStorage
+            
+            const progress = (visitedSections.size / totalSections) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-percentage').textContent = `${Math.round(progress)}%`;
+        }
+
+        document.getElementById('start-button').addEventListener('click', function() {
+            document.querySelector('[data-tab="tab-ohm"]').click();
+        });
+
+        // Калькулятор закону Джоуля-Ленца
+        function initJouleLenzCalculator() {
+            const heatInput = document.getElementById('calc-heat');
+            const currentInput = document.getElementById('calc-joule-current');
+            const resistanceInput = document.getElementById('calc-joule-resistance');
+            const timeInput = document.getElementById('calc-time');
+            const resultDiv = document.getElementById('joule-result');
+
+            // Встановлення початкових значень
+            if (currentInput) currentInput.value = "2";
+            if (resistanceInput) resistanceInput.value = "10";
+            if (timeInput) timeInput.value = "5";
+            if (heatInput) heatInput.value = "200"; // Додано початкове значення для теплової енергії
+
+            // Розрахунок теплової енергії
+            document.getElementById('calc-heat-btn')?.addEventListener('click', () => {
+                const current = parseFloat(currentInput.value) || 0;
+                const resistance = parseFloat(resistanceInput.value) || 0;
+                const time = parseFloat(timeInput.value) || 0;
+                
+                const heat = current * current * resistance * time;
+                resultDiv.classList.remove('hidden');
+                resultDiv.innerHTML = `<p>Теплова енергія: ${heat.toFixed(2)} Дж</p>`;
+            });
+
+            // Розрахунок струму
+            document.getElementById('calc-joule-current-btn')?.addEventListener('click', () => {
+                const heat = parseFloat(heatInput.value) || 0;
+                const resistance = parseFloat(resistanceInput.value) || 0;
+                const time = parseFloat(timeInput.value) || 0;
+                
+                if (resistance > 0 && time > 0) {
+                    const current = Math.sqrt(heat / (resistance * time));
+                    resultDiv.classList.remove('hidden');
+                    resultDiv.innerHTML = `<p>Сила струму: ${current.toFixed(2)} А</p>`;
+                }
+            });
+
+            // Розрахунок опору
+            document.getElementById('calc-joule-resistance-btn')?.addEventListener('click', () => {
+                const heat = parseFloat(heatInput.value) || 0;
+                const current = parseFloat(currentInput.value) || 0;
+                const time = parseFloat(timeInput.value) || 0;
+                
+                if (current > 0 && time > 0) {
+                    const resistance = heat / (current * current * time);
+                    resultDiv.classList.remove('hidden');
+                    resultDiv.innerHTML = `<p>Опір: ${resistance.toFixed(2)} Ω</p>`;
+                }
+            });
+
+            // Розрахунок часу
+            document.getElementById('calc-time-btn')?.addEventListener('click', () => {
+                const heat = parseFloat(heatInput.value) || 0;
+                const current = parseFloat(currentInput.value) || 0;
+                const resistance = parseFloat(resistanceInput.value) || 0;
+                
+                if (current > 0 && resistance > 0) {
+                    const time = heat / (current * current * resistance);
+                    resultDiv.classList.remove('hidden');
+                    resultDiv.innerHTML = `<p>Час: ${time.toFixed(2)} с</p>`;
+                }
+            });
+        }
+
+        // Калькулятор електромагнітної індукції
+        function initInductionCalculator() {
+            const fluxInitialInput = document.getElementById('magnetic-flux-initial');
+            const fluxFinalInput = document.getElementById('magnetic-flux-final');
+            const timeInput = document.getElementById('time-change');
+            const resultDiv = document.getElementById('emf-result');
+            const resultText = document.getElementById('emf-result-text');
+
+            // Встановлення початкових значень
+            fluxInitialInput.value = "0.5";
+            fluxFinalInput.value = "0.8";
+            timeInput.value = "0.1";
+
+            document.getElementById('calc-emf-btn').addEventListener('click', () => {
+                const fluxInitial = parseFloat(fluxInitialInput.value);
+                const fluxFinal = parseFloat(fluxFinalInput.value);
+                const time = parseFloat(timeInput.value);
+                
+                if (!isNaN(fluxInitial) && !isNaN(fluxFinal) && !isNaN(time) && time !== 0) {
+                    const deltaFlux = fluxFinal - fluxInitial;
+                    const emf = -deltaFlux / time;
+                    
+                    resultDiv.classList.remove('hidden');
+                    resultText.innerHTML = `
+                        <p>Зміна магнітного потоку: ${deltaFlux.toFixed(3)} Вб</p>
+                        <p>ЕРС індукції: ${Math.abs(emf).toFixed(2)} В</p>
+                        <p>Напрямок ЕРС: ${emf < 0 ? 'За годинниковою стрілкою' : 'Проти годинникової стрілки'}</p>
+                    `;
+                }
+            });
+        }
+
+        // Калькулятор потужності електричного струму
+        function initPowerCalculator() {
+            const currentInput = document.getElementById('power-current');
+            const voltageInput = document.getElementById('power-voltage');
+            const resistanceInput = document.getElementById('power-resistance');
+            const resultDiv = document.getElementById('power-result');
+            const resultText = document.getElementById('power-result-text');
+
+            // Встановлення початкових значень
+            if (currentInput) currentInput.value = "2";
+            if (voltageInput) voltageInput.value = "220";
+            if (resistanceInput) resistanceInput.value = "110";
+
+            const calcButton = document.getElementById('calc-power-btn');
+            if (calcButton) {
+                calcButton.addEventListener('click', () => {
+                    const current = parseFloat(currentInput.value) || 0;
+                    const voltage = parseFloat(voltageInput.value) || 0;
+                    const resistance = parseFloat(resistanceInput.value) || 0;
+                    
+                    if (current === 0 || voltage === 0 || resistance === 0) {
+                        resultDiv.classList.remove('hidden');
+                        resultText.innerHTML = '<p class="text-red-500">Помилка: всі значення повинні бути більше нуля!</p>';
+                        return;
+                    }
+                    
+                    const powerIU = current * voltage;
+                    const powerI2R = current * current * resistance;
+                    const powerU2R = voltage * voltage / resistance;
+                    
+                    resultDiv.classList.remove('hidden');
+                    resultText.innerHTML = `
+                        <p>Потужність (P = I·U): ${powerIU.toFixed(2)} Вт</p>
+                        <p>Потужність (P = I²·R): ${powerI2R.toFixed(2)} Вт</p>
+                        <p>Потужність (P = U²/R): ${powerU2R.toFixed(2)} Вт</p>
+                    `;
+                });
+            }
+        }
+
+        // Калькулятор законів Кірхгофа для простого кола з двома джерелами
+        function initKirchhoffCalculator() {
+            const source1Input = document.getElementById('calc-source1');
+            const source2Input = document.getElementById('calc-source2');
+            const resistanceInput = document.getElementById('calc-circuit-resistance');
+            const resultDiv = document.getElementById('kirchhoff-result');
+            const resultText = document.getElementById('kirchhoff-result-text');
+
+            // Встановлення початкових значень
+            source1Input.value = "12";
+            source2Input.value = "6";
+            resistanceInput.value = "3";
+
+            document.getElementById('calc-kirchhoff-btn').addEventListener('click', () => {
+                const e1 = parseFloat(source1Input.value) || 0;
+                const e2 = parseFloat(source2Input.value) || 0;
+                const r = parseFloat(resistanceInput.value) || 0;
+                
+                if (r !== 0) {
+                    const totalEmf = e1 + e2;
+                    const current = totalEmf / r;
+                    
+                    resultDiv.classList.remove('hidden');
+                    resultText.innerHTML = `
+                        <p>Сумарна ЕРС: ${totalEmf.toFixed(2)} В</p>
+                        <p>Струм у колі: ${current.toFixed(2)} А</p>
+                        <p>Падіння напруги: ${(current * r).toFixed(2)} В</p>
+                    `;
+                }
+            });
+        }
+
+        // Калькулятор ЕРС для котушки з N витків
+        function initCoilCalculator() {
+            const turnsInput = document.getElementById('coil-turns');
+            const fluxRateInput = document.getElementById('flux-change-rate');
+            const resistanceInput = document.getElementById('coil-resistance');
+            const resultDiv = document.getElementById('coil-result');
+            const emfText = document.getElementById('coil-emf-text');
+            const currentText = document.getElementById('coil-current-text');
+
+            // Встановлення початкових значень
+            turnsInput.value = "100";
+            fluxRateInput.value = "0.02";
+            resistanceInput.value = "10";
+
+            document.getElementById('calc-coil-btn').addEventListener('click', () => {
+                const turns = parseFloat(turnsInput.value);
+                const fluxRate = parseFloat(fluxRateInput.value);
+                const resistance = parseFloat(resistanceInput.value);
+                
+                if (!isNaN(turns) && !isNaN(fluxRate) && !isNaN(resistance) && resistance !== 0) {
+                    const emf = -turns * fluxRate;
+                    const current = Math.abs(emf) / resistance;
+                    
+                    resultDiv.classList.remove('hidden');
+                    emfText.textContent = `ЕРС індукції: ${Math.abs(emf).toFixed(2)} В`;
+                    currentText.textContent = `Індукційний струм: ${current.toFixed(3)} А`;
+                }
+            });
+        }
+
+        // Калькулятор для простого кола з двома джерелами
+        function initSimpleCircuitCalculator() {
+            const source1Input = document.getElementById('calc-source1');
+            const source2Input = document.getElementById('calc-source2');
+            const resistanceInput = document.getElementById('calc-circuit-resistance');
+            const resultDiv = document.getElementById('kirchhoff-result');
+            const resultText = document.getElementById('kirchhoff-result-text');
+
+            if (!source1Input || !source2Input || !resistanceInput || !resultDiv || !resultText) {
+                console.error('Не знайдено необхідні елементи для калькулятора простого кола');
+                return;
+            }
+
+            // Встановлення початкових значень
+            source1Input.value = "12";
+            source2Input.value = "6";
+            resistanceInput.value = "3";
+
+            const calcButton = document.getElementById('calc-kirchhoff-btn');
+            if (calcButton) {
+                calcButton.addEventListener('click', () => {
+                    const e1 = parseFloat(source1Input.value) || 0;
+                    const e2 = parseFloat(source2Input.value) || 0;
+                    const r = parseFloat(resistanceInput.value) || 0;
+                    
+                    if (r !== 0) {
+                        const totalEmf = e1 + e2;
+                        const current = totalEmf / r;
+                        
+                        resultDiv.classList.remove('hidden');
+                        resultText.innerHTML = `
+                            <p>Сумарна ЕРС: ${totalEmf.toFixed(2)} В</p>
+                            <p>Струм у колі: ${current.toFixed(2)} А</p>
+                            <p>Падіння напруги: ${(current * r).toFixed(2)} В</p>
+                        `;
+                    } else {
+                        resultDiv.classList.remove('hidden');
+                        resultText.innerHTML = '<p class="text-red-500">Помилка: опір не може дорівнювати нулю!</p>';
+                    }
+                });
+            }
+        }
+
+        // Глобальний об'єкт з тестовими даними
+        window.testData = {
+            ohm: [
+                {
+                    question: "Як змінюється сила струму при збільшенні напруги вдвічі (за незмінного опору)?",
+                    options: [
+                        "Не змінюється",
+                        "Збільшується вдвічі",
+                        "Зменшується вдвічі",
+                        "Збільшується в чотири рази"
+                    ],
+                    correct: 1
+                },
+                {
+                    question: "Як змінюється сила струму при збільшенні опору вдвічі (за незмінної напруги)?",
+                    options: [
+                        "Збільшується вдвічі",
+                        "Не змінюється",
+                        "Зменшується вдвічі",
+                        "Зменшується в чотири рази"
+                    ],
+                    correct: 2
+                },
+                {
+                    question: "Яка формула відображає закон Ома для ділянки кола?",
+                    options: [
+                        "U = I/R",
+                        "R = U/I",
+                        "I = U·R",
+                        "I = U/R"
+                    ],
+                    correct: 3
+                },
+                {
+                    question: "При якій умові опір провідника залишається постійним?",
+                    options: [
+                        "При зміні напруги",
+                        "При зміні струму",
+                        "При зміні довжини провідника",
+                        "При постійній температурі"
+                    ],
+                    correct: 3
+                }
+            ],
+            kirchhoff: [
+                {
+                    question: "Чому дорівнює алгебраїчна сума струмів у вузлі електричного кола?",
+                    options: [
+                        "Загальному опору кола",
+                        "Нулю",
+                        "Напрузі джерела живлення",
+                        "Сумі ЕРС джерел"
+                    ],
+                    correct: 1
+                },
+                {
+                    question: "Що таке вузол в електричному колі?",
+                    options: [
+                        "Точка заземлення",
+                        "Точка підключення джерела живлення",
+                        "Точка з'єднання трьох або більше провідників",
+                        "Точка розриву кола"
+                    ],
+                    correct: 2
+                },
+                {
+                    question: "Що стверджує другий закон Кірхгофа?",
+                    options: [
+                        "Потужність дорівнює добутку напруги на струм",
+                        "Напруга дорівнює добутку струму на опір",
+                        "Сума струмів у вузлі дорівнює нулю",
+                        "Сума ЕРС дорівнює сумі падінь напруги в замкненому контурі"
+                    ],
+                    correct: 3
+                },
+                {
+                    question: "Скільки незалежних рівнянь за першим законом Кірхгофа можна скласти для кола з n вузлами?",
+                    options: [
+                        "2n",
+                        "n+1",
+                        "n-1",
+                        "n"
+                    ],
+                    correct: 2
+                }
+            ],
+            joule: [
+                {
+                    question: "Від чого залежить кількість теплоти за законом Джоуля-Ленца?",
+                    options: [
+                        "Від напруги та часу",
+                        "Від потужності та опору",
+                        "Від квадрата струму, опору та часу",
+                        "Від струму, опору та часу"
+                    ],
+                    correct: 2
+                },
+                {
+                    question: "Як зміниться кількість теплоти при збільшенні сили струму вдвічі?",
+                    options: [
+                        "Не зміниться",
+                        "Збільшиться в 4 рази",
+                        "Зменшиться вдвічі",
+                        "Збільшиться вдвічі"
+                    ],
+                    correct: 1
+                },
+                {
+                    question: "В яких одиницях вимірюється кількість теплоти?",
+                    options: [
+                        "Ватах",
+                        "Вольтах",
+                        "Амперах",
+                        "Джоулях"
+                    ],
+                    correct: 3
+                },
+                {
+                    question: "Яка формула відображає закон Джоуля-Ленца?",
+                    options: [
+                        "Q = UIt",
+                        "Q = I²Rt",
+                        "Q = IRt",
+                        "Q = I²R"
+                    ],
+                    correct: 1
+                }
+            ],
+            induction: [
+                {
+                    question: "Що є причиною виникнення ЕРС індукції?",
+                    options: [
+                        "Електричний струм",
+                        "Зміна магнітного потоку",
+                        "Постійне магнітне поле",
+                        "Електричний заряд"
+                    ],
+                    correct: 1
+                },
+                {
+                    question: "Як формулюється правило Ленца?",
+                    options: [
+                        "Індукційний струм не залежить від зміни магнітного поля",
+                        "Індукційний струм підсилює причину, що його викликала",
+                        "Індукційний струм протидіє причині, що його викликала",
+                        "Індукційний струм пропорційний магнітному полю"
+                    ],
+                    correct: 2
+                },
+                {
+                    question: "Від чого залежить ЕРС індукції в котушці?",
+                    options: [
+                        "Тільки від сили струму",
+                        "Від площі поперечного перерізу провідника",
+                        "Тільки від опору котушки",
+                        "Від швидкості зміни магнітного потоку і кількості витків"
+                    ],
+                    correct: 3
+                },
+                {
+                    question: "В яких одиницях вимірюється магнітний потік?",
+                    options: [
+                        "Теслах",
+                        "Веберах",
+                        "Генрі",
+                        "Вольтах"
+                    ],
+                    correct: 1
+                }
+            ]
+        };
+
+        // Функція ініціалізації тестів
+        function initTests() {
+            const categoryButtons = document.querySelectorAll('.test-category-btn');
+            const testContainer = document.getElementById('test-container');
+            const questionsContainer = document.getElementById('questions-container');
+            const checkAnswersBtn = document.getElementById('check-answers-btn');
+            const resetTestBtn = document.getElementById('reset-test-btn');
+            const testResults = document.getElementById('test-results');
+            const tryAgainBtn = document.getElementById('try-again-btn');
+            
+            let currentCategory = '';
+
+            function getCategoryTitle(category) {
+                const titles = {
+                    'ohm': 'Закон Ома',
+                    'kirchhoff': 'Закони Кірхгофа',
+                    'joule': 'Закон Джоуля-Ленца',
+                    'induction': 'Електромагнітна індукція',
+                    'all': 'Всі теми'
+                };
+                return titles[category] || category;
+            }
+
+            function showTest(category) {
+                currentCategory = category;
+                testContainer.classList.remove('hidden');
+                testResults.classList.add('hidden');
+                
+                let questions;
+                if (category === 'all') {
+                    questions = Object.values(window.testData).flat();
+                } else {
+                    questions = window.testData[category];
+                }
+                
+                document.getElementById('test-title').textContent = `Тест: ${getCategoryTitle(category)}`;
+                
+                questionsContainer.innerHTML = questions.map((q, index) => `
+                    <div class="mb-6">
+                        <p class="font-semibold mb-2">${index + 1}. ${q.question}</p>
+                        <div class="space-y-2">
+                            ${q.options.map((option, i) => `
+                                <label class="flex items-center">
+                                    <input type="radio" name="q${index}" value="${i}" class="mr-2">
+                                    <span>${option}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function checkAnswers() {
+                const questions = currentCategory === 'all' 
+                    ? Object.values(window.testData).flat()
+                    : window.testData[currentCategory];
+                    
+                let correct = 0;
+                const answers = [];
+                
+                questions.forEach((q, index) => {
+                    const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                    if (selected && parseInt(selected.value) === q.correct) {
+                        correct++;
+                        answers.push(true);
+                    } else {
+                        answers.push(false);
+                    }
+                });
+                
+                showResults(correct, questions.length, answers, questions);
+            }
+
+            function showResults(correct, total, answers, questions) {
+                testResults.classList.remove('hidden');
+                document.getElementById('correct-answers').textContent = correct;
+                document.getElementById('total-questions').textContent = total;
+                document.getElementById('test-progress-bar').style.width = `${(correct / total) * 100}%`;
+                
+                document.getElementById('test-feedback').innerHTML = questions.map((q, i) => `
+                    <div class="mb-2 ${answers[i] ? 'text-green-600' : 'text-red-600'}">
+                        <p class="font-semibold">${i + 1}. ${q.question}</p>
+                        <p>Правильна відповідь: ${q.options[q.correct]}</p>
+                    </div>
+                `).join('');
+
+                document.getElementById('test-score').textContent = `${correct}/${total}`;
+            }
+
+            // Додавання обробників подій
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const category = button.getAttribute('data-category');
+                    showTest(category);
+                });
+            });
+
+            checkAnswersBtn.addEventListener('click', checkAnswers);
+            
+            resetTestBtn.addEventListener('click', () => {
+                showTest(currentCategory);
+                testResults.classList.add('hidden');
+            });
+
+            tryAgainBtn.addEventListener('click', () => {
+                showTest(currentCategory);
+                testResults.classList.add('hidden');
+            });
+        }
+
+        // Функція ініціалізації калькулятора законів Кірхгофа
+        function initKirchhoffCalculator() {
+            const kirchhoffCalc = document.getElementById('kirchhoff-calculator');
+            if (!kirchhoffCalc) return;
+
+            // Встановлення початкових значень
+            document.getElementById('i1').value = "2";
+            document.getElementById('i2').value = "1";
+            document.getElementById('i3').value = "3";
+            document.getElementById('r1').value = "10";
+            document.getElementById('r2').value = "20";
+            document.getElementById('r3').value = "15";
+            document.getElementById('e1').value = "12";
+            document.getElementById('e2').value = "9";
+
+            kirchhoffCalc.addEventListener('input', calculateKirchhoff);
+            document.getElementById('calculate-kirchhoff').addEventListener('click', calculateKirchhoff);
+
+            function calculateKirchhoff() {
+                const i1 = parseFloat(document.getElementById('i1').value) || 0;
+                const i2 = parseFloat(document.getElementById('i2').value) || 0;
+                const i3 = parseFloat(document.getElementById('i3').value) || 0;
+                const r1 = parseFloat(document.getElementById('r1').value) || 0;
+                const r2 = parseFloat(document.getElementById('r2').value) || 0;
+                const r3 = parseFloat(document.getElementById('r3').value) || 0;
+                const e1 = parseFloat(document.getElementById('e1').value) || 0;
+                const e2 = parseFloat(document.getElementById('e2').value) || 0;
+
+                // Перевірка першого закону Кірхгофа
+                const nodeSum = i1 - i2 - i3;
+                const isNodeValid = Math.abs(nodeSum) < 0.01;
+
+                // Перевірка другого закону Кірхгофа
+                const loop1 = e1 - (i1 * r1) - (i2 * r2);
+                const loop2 = e2 - (i2 * r2) - (i3 * r3);
+                const areLoopsValid = Math.abs(loop1) < 0.01 && Math.abs(loop2) < 0.01;
+
+                document.getElementById('kirchhoff-result').innerHTML = `
+                    <p>Перший закон Кірхгофа (для вузла): ${isNodeValid ? 'Виконується' : 'Не виконується'}</p>
+                    <p>Другий закон Кірхгофа (для контурів): ${areLoopsValid ? 'Виконується' : 'Не виконується'}</p>
+                `;
+            }
+
+            // Початковий розрахунок
+            calculateKirchhoff();
+        }
+
+        // Функція для ініціалізації всіх калькуляторів
+        function initAllCalculators() {
+            // Калькулятор простого кола з двома джерелами
+            const source1Input = document.getElementById('calc-source1');
+            const source2Input = document.getElementById('calc-source2');
+            const resistanceInput = document.getElementById('calc-circuit-resistance');
+            const resultDiv = document.getElementById('kirchhoff-result');
+            const resultText = document.getElementById('kirchhoff-result-text');
+
+            if (source1Input && source2Input && resistanceInput) {
+                source1Input.value = "12";
+                source2Input.value = "6";
+                resistanceInput.value = "3";
+
+                document.getElementById('calc-kirchhoff-btn')?.addEventListener('click', () => {
+                    const e1 = parseFloat(source1Input.value) || 0;
+                    const e2 = parseFloat(source2Input.value) || 0;
+                    const r = parseFloat(resistanceInput.value) || 0;
+                    
+                    if (r !== 0) {
+                        const totalEmf = e1 + e2;
+                        const current = totalEmf / r;
+                        
+                        resultDiv.classList.remove('hidden');
+                        resultText.innerHTML = `
+                            <p>Сумарна ЕРС: ${totalEmf.toFixed(2)} В</p>
+                            <p>Струм у колі: ${current.toFixed(2)} А</p>
+                            <p>Падіння напруги: ${(current * r).toFixed(2)} В</p>
+                        `;
+                    } else {
+                        resultDiv.classList.remove('hidden');
+                        resultText.innerHTML = '<p class="text-red-500">Помилка: опір не може дорівнювати нулю!</p>';
+                    }
+                });
+            }
+
+            // Калькулятор потужності
+            const powerCurrentInput = document.getElementById('power-current');
+            const powerVoltageInput = document.getElementById('power-voltage');
+            const powerResistanceInput = document.getElementById('power-resistance');
+            const powerResultDiv = document.getElementById('power-result');
+            const powerResultText = document.getElementById('power-result-text');
+
+            if (powerCurrentInput && powerVoltageInput && powerResistanceInput) {
+                powerCurrentInput.value = "2";
+                powerVoltageInput.value = "220";
+                powerResistanceInput.value = "110";
+
+                document.getElementById('calc-power-btn')?.addEventListener('click', () => {
+                    const current = parseFloat(powerCurrentInput.value) || 0;
+                    const voltage = parseFloat(powerVoltageInput.value) || 0;
+                    const resistance = parseFloat(powerResistanceInput.value) || 0;
+                    
+                    if (current === 0 || voltage === 0 || resistance === 0) {
+                        powerResultDiv.classList.remove('hidden');
+                        powerResultText.innerHTML = '<p class="text-red-500">Помилка: всі значення повинні бути більше нуля!</p>';
+                        return;
+                    }
+                    
+                    const powerIU = current * voltage;
+                    const powerI2R = current * current * resistance;
+                    const powerU2R = voltage * voltage / resistance;
+                    
+                    powerResultDiv.classList.remove('hidden');
+                    powerResultText.innerHTML = `
+                        <p>Потужність (P = I·U): ${powerIU.toFixed(2)} Вт</p>
+                        <p>Потужність (P = I²·R): ${powerI2R.toFixed(2)} Вт</p>
+                        <p>Потужність (P = U²/R): ${powerU2R.toFixed(2)} Вт</p>
+                    `;
+                });
+            }
+
+            // Інтерактивна демонстрація другого закону Кірхгофа
+            const canvas = document.getElementById('kirchhoff-loop-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width;
+                const height = canvas.height;
+
+                function drawCircuit() {
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    // Стиль для малювання
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 2;
+                    ctx.font = '14px Arial';
+                    
+                    // Малюємо контур
+                    ctx.beginPath();
+                    ctx.moveTo(50, 50);
+                    ctx.lineTo(250, 50);
+                    ctx.lineTo(250, 170);
+                    ctx.lineTo(50, 170);
+                    ctx.lineTo(50, 50);
+                    ctx.stroke();
+                    
+                    // Малюємо джерела ЕРС з урахуванням полярності
+                    drawVoltageSource(state.e1.x, state.e1.y, 'E1', state.e1.value, state.e1.polarity);
+                    drawVoltageSource(state.e2.x, state.e2.y, 'E2', state.e2.value, state.e2.polarity);
+                    
+                    // Малюємо резистор
+                    drawResistor(state.r1.x, state.r1.y, 'R1', state.r1.value);
+                    
+                    // Малюємо стрілку струму
+                    drawCurrentArrow(150, 100, Math.abs(state.current.value).toFixed(2), state.current.direction);
+                }
+
+                function drawVoltageSource(x, y, label, value, polarity) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y - 15);
+                    ctx.lineTo(x, y + 15);
+                    ctx.stroke();
+                    
+                    // Малюємо полярність
+                    const plusY = polarity > 0 ? y - 20 : y + 20;
+                    const minusY = polarity > 0 ? y + 20 : y - 20;
+                    
+                    ctx.font = '12px Arial';
+                    ctx.fillText('+', x - 5, plusY);
+                    ctx.fillText('−', x - 5, minusY);
+                    
+                    // Значення ЕРС
+                    ctx.font = '14px Arial';
+                    ctx.fillText(`${label} = ${value}В`, x - 25, y + 35);
+                }
+
+                function drawResistor(x, y, label, value) {
+                    // Малюємо зигзаг резистора
+                    ctx.beginPath();
+                    ctx.moveTo(x - 20, y);
+                    
+                    const zigzagWidth = 5;
+                    const zigzagHeight = 10;
+                    let currentX = x - 15;
+                    
+                    for (let i = 0; i < 6; i++) {
+                        ctx.lineTo(currentX, y + (i % 2 === 0 ? zigzagHeight : -zigzagHeight));
+                        currentX += zigzagWidth;
+                    }
+                    
+                    ctx.lineTo(x + 20, y);
+                    ctx.stroke();
+                    
+                    // Значення опору
+                    ctx.fillText(`${label} = ${value}Ω`, x - 25, y - 15);
+                }
+
+                function drawCurrentArrow(x, y, value, direction) {
+                    const arrowSize = 10;
+                    const radius = 60;
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    
+                    // Малюємо стрілку в залежності від напрямку
+                    const angle = direction > 0 ? 0.5 : -0.5;
+                    const arrowX = x + radius * Math.cos(angle * Math.PI);
+                    const arrowY = y + radius * Math.sin(angle * Math.PI);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(arrowX, arrowY);
+                    ctx.lineTo(arrowX - arrowSize * Math.cos((angle - 0.2) * Math.PI), 
+                              arrowY - arrowSize * Math.sin((angle - 0.2) * Math.PI));
+                    ctx.lineTo(arrowX - arrowSize * Math.cos((angle + 0.2) * Math.PI),
+                              arrowY - arrowSize * Math.sin((angle + 0.2) * Math.PI));
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Значення струму
+                    ctx.fillText(`I = ${value}A`, x - 30, y);
+                }
+
+                // Малюємо початкову схему
+                drawCircuit();
+            }
+        }
+
+        // Викликаємо функцію ініціалізації при завантаженні сторінки
+        document.addEventListener('DOMContentLoaded', initAllCalculators);
+
+        // Функція для демонстрації другого закону Кірхгофа
+        const KirchhoffDemo = {
+            init() {
+                this.canvas = document.getElementById('kirchhoff-loop-canvas');
+                if (!this.canvas) return;
+
+                this.ctx = this.canvas.getContext('2d');
+                this.width = this.canvas.width;
+                this.height = this.canvas.height;
+
+                // Стан схеми
+                this.state = {
+                    e1: {
+                        value: 6,
+                        polarity: 1,
+                        x: 100,
+                        y: 150
+                    },
+                    e2: {
+                        value: 4,
+                        polarity: 1,
+                        x: 300,
+                        y: 150
+                    },
+                    r1: {
+                        value: 2,
+                        x: 200,
+                        y: 75
+                    },
+                    current: {
+                        value: 0,
+                        direction: 1
+                    }
+                };
+
+                this.setupControls();
+                this.updateCircuit();
+            },
+
+            setupControls() {
+                // Налаштування повзунків
+                ['e1', 'e2', 'r1'].forEach(id => {
+                    const slider = document.getElementById(`${id}-slider`);
+                    const value = document.getElementById(`${id}-value`);
+                    
+                    if (slider && value) {
+                        slider.addEventListener('input', (e) => {
+                            this.state[id].value = parseFloat(e.target.value);
+                            value.textContent = this.state[id].value;
+                            this.updateCircuit();
+                        });
+                    }
+                });
+
+                // Налаштування кнопок полярності
+                ['e1', 'e2'].forEach(id => {
+                    const button = document.getElementById(`${id}-polarity`);
+                    if (button) {
+                        button.addEventListener('click', () => {
+                            this.state[id].polarity *= -1;
+                            this.updateCircuit();
+                        });
+                    }
+                });
+            },
+
+            updateCircuit() {
+                // Розрахунок струму
+                const totalEmf = this.state.e1.value * this.state.e1.polarity + 
+                                this.state.e2.value * this.state.e2.polarity;
+                this.state.current.value = totalEmf / this.state.r1.value;
+                this.state.current.direction = this.state.current.value >= 0 ? 1 : -1;
+                
+                this.drawCircuit();
+                this.updateResults();
+            },
+
+            drawCircuit() {
+                const ctx = this.ctx;
+                ctx.clearRect(0, 0, this.width, this.height);
+                
+                // Основні налаштування
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.font = '14px Arial';
+                
+                // Малюємо контур
+                ctx.beginPath();
+                ctx.moveTo(100, 75);
+                ctx.lineTo(300, 75);
+                ctx.lineTo(300, 225);
+                ctx.lineTo(100, 225);
+                ctx.lineTo(100, 75);
+                ctx.stroke();
+                
+                // Малюємо елементи схеми (спочатку резистор, потім джерела)
+                this.drawResistor(this.state.r1.x, this.state.r1.y, 'R1', 
+                    this.state.r1.value);
+                this.drawVoltageSource(this.state.e1.x, this.state.e1.y, 'E1', 
+                    this.state.e1.value, this.state.e1.polarity, 'left');
+                this.drawVoltageSource(this.state.e2.x, this.state.e2.y, 'E2', 
+                    this.state.e2.value, this.state.e2.polarity, 'right');
+                this.drawCurrentArrow(this.state.current.value, this.state.current.direction);
+            },
+
+            drawVoltageSource(x, y, label, value, polarity, align = 'left') {
+                const ctx = this.ctx;
+                
+                // Заповнюємо фон білим кольором
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(x, y, 25, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Малюємо коло
+                ctx.strokeStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(x, y, 25, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                // Довга вертикальна лінія всередині кола
+                ctx.beginPath();
+                ctx.moveTo(x, y - 15);
+                ctx.lineTo(x, y + 15);
+                ctx.stroke();
+
+                // Коротка горизонтальна лінія для позначення полярності
+                ctx.beginPath();
+                if ((align === 'left' && polarity > 0) || (align === 'right' && polarity < 0)) {
+                    // Довга лінія зверху для +
+                    ctx.moveTo(x - 10, y - 10);
+                    ctx.lineTo(x + 10, y - 10);
+                    // Коротка лінія знизу для -
+                    ctx.moveTo(x - 5, y + 10);
+                    ctx.lineTo(x + 5, y + 10);
+                } else {
+                    // Коротка лінія зверху для -
+                    ctx.moveTo(x - 5, y - 10);
+                    ctx.lineTo(x + 5, y - 10);
+                    // Довга лінія знизу для +
+                    ctx.moveTo(x - 10, y + 10);
+                    ctx.lineTo(x + 10, y + 10);
+                }
+                ctx.stroke();
+
+                // Значення ЕРС
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                const textX = align === 'left' ? x - 60 : x + 35;
+                ctx.fillText(`${label}=${Math.abs(value)}В`, textX, y - 35);
+                
+                // Позначення полярності збоку від джерела
+                ctx.font = '16px Arial';
+                const signX = align === 'left' ? x - 35 : x + 35;
+                if ((align === 'left' && polarity > 0) || (align === 'right' && polarity < 0)) {
+                    ctx.fillText('+', signX, y - 10);
+                    ctx.fillText('−', signX, y + 15);
+                } else {
+                    ctx.fillText('−', signX, y - 10);
+                    ctx.fillText('+', signX, y + 15);
+                }
+            },
+
+            drawResistor(x, y, label, value) {
+                const ctx = this.ctx;
+                
+                // Заповнюємо фон білим кольором
+                ctx.fillStyle = '#ffffff';
+                const width = 40;
+                const height = 20;
+                ctx.fillRect(x - width/2, y - height/2, width, height);
+                
+                // Малюємо прямокутний резистор
+                ctx.strokeStyle = '#000';
+                ctx.beginPath();
+                ctx.rect(x - width/2, y - height/2, width, height);
+                ctx.stroke();
+
+                // Позначення
+                ctx.fillStyle = '#000';
+                ctx.fillText(`${label} = ${value}Ω`, x - 30, y - 25);
+            },
+
+            drawCurrentArrow(current, direction) {
+                const ctx = this.ctx;
+                const x = 200;
+                const y = 150;
+                const radius = 40;
+                const angle = direction > 0 ? 0 : Math.PI;
+                
+                // Стрілка струму (пунктирне коло)
+                ctx.strokeStyle = '#000';
+                ctx.beginPath();
+                ctx.setLineDash([5, 5]);
+                ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Наконечник стрілки
+                ctx.fillStyle = '#000';
+                const arrowX = x + radius * Math.cos(angle);
+                const arrowY = y + radius * Math.sin(angle);
+                
+                ctx.beginPath();
+                ctx.moveTo(arrowX, arrowY);
+                ctx.lineTo(arrowX - 15 * Math.cos(angle - 0.5), arrowY - 15 * Math.sin(angle - 0.5));
+                ctx.lineTo(arrowX - 15 * Math.cos(angle + 0.5), arrowY - 15 * Math.sin(angle + 0.5));
+                ctx.closePath();
+                ctx.fill();
+
+                // Значення струму
+                ctx.fillText(`I=${Math.abs(current).toFixed(2)}A`, x - 30, y);
+            },
+
+            updateResults() {
+                const voltageDropValue = document.getElementById('voltage-drop-value');
+                const kirchhoffSum = document.getElementById('kirchhoff-sum');
+                
+                const voltageDrop = Math.abs(this.state.current.value * this.state.r1.value);
+                const sum = this.state.e1.value * this.state.e1.polarity + 
+                           this.state.e2.value * this.state.e2.polarity - 
+                           voltageDrop;
+                
+                if (voltageDropValue) {
+                    voltageDropValue.textContent = voltageDrop.toFixed(2);
+                }
+                
+                if (kirchhoffSum) {
+                    kirchhoffSum.textContent = Math.abs(sum).toFixed(2);
+                }
+            }
+        };
+
+        // Ініціалізація при завантаженні сторінки
+        document.addEventListener('DOMContentLoaded', () => {
+            KirchhoffDemo.init();
+        });
+    </script>
+</body>
+</html>

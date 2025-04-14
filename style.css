@@ -1,0 +1,19 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #a8e063, #56ab2f); /* A gradient of nature-related colors */
+    color: #333; /* Dark gray for text */
+}
+
+h1 {
+    font-size: 2.5em;
+    color: #fff; /* White for the title, for contrast */
+}
+
+.container {
+    text-align: center;
+}
